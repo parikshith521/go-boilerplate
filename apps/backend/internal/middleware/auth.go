@@ -47,6 +47,7 @@ func (auth *AuthMiddleware) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc 
 				}
 			}))))(func(c echo.Context) error {
 		start := time.Now()
+		// fetches some info from JWT token and stores it in the context
 		claims, ok := clerk.SessionClaimsFromContext(c.Request().Context())
 
 		if !ok {

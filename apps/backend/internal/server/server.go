@@ -26,6 +26,8 @@ type Server struct {
 	Job           *job.JobService
 }
 
+// whole codebase uses depedency injection pattern
+
 func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPkg.LoggerService) (*Server, error) {
 	db, err := database.New(cfg, logger, loggerService)
 	if err != nil {
@@ -98,6 +100,7 @@ func (s *Server) Start() error {
 	return s.httpServer.ListenAndServe()
 }
 
+// shutdown order => opposite of initialization order
 func (s *Server) Shutdown(ctx context.Context) error {
 	if err := s.httpServer.Shutdown(ctx); err != nil {
 		return fmt.Errorf("failed to shutdown HTTP server: %w", err)

@@ -10,6 +10,7 @@ const (
 	RequestIDKey    = "request_id"
 )
 
+// we are giving an ID to each request for keeping track of it (observability)
 func RequestID() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

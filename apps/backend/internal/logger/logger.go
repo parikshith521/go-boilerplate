@@ -20,13 +20,17 @@ type LoggerService struct {
 }
 
 // NewLoggerService creates a new logger service with New Relic integration
+// Pulls from CONFIG
+// returns an empty service in case of any problems when initializing new relic
 func NewLoggerService(cfg *config.ObservabilityConfig) *LoggerService {
 	service := &LoggerService{}
 
 	if cfg.NewRelic.LicenseKey == "" {
+		// An empty service in case New Relic isn't registered
 		return service
 	}
 
+	// New Relic service instance config pulled from CONFIG
 	var configOptions []newrelic.ConfigOption
 	configOptions = append(configOptions,
 		newrelic.ConfigAppName(cfg.ServiceName),
@@ -61,7 +65,6 @@ func (ls *LoggerService) GetApplication() *newrelic.Application {
 	return ls.nrApp
 }
 
-
 // NewLoggerWithService creates a logger with full config and logger service
 func NewLoggerWithService(cfg *config.ObservabilityConfig, loggerService *LoggerService) zerolog.Logger {
 	var logLevel zerolog.Level
@@ -88,6 +91,8 @@ func NewLoggerWithService(cfg *config.ObservabilityConfig, loggerService *Logger
 
 	// Setup base writer
 	var baseWriter io.Writer
+
+	// Only prod logs go to new relic, in dev, we just print to the console
 	if cfg.IsProduction() && cfg.Logging.Format == "json" {
 		// In production, write to stdout
 		baseWriter = os.Stdout
